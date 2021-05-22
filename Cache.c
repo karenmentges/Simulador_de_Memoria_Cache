@@ -11,6 +11,7 @@ typedef struct {
 } Grade;
 
 typedef struct {
+    int num;
     int FIFO;
     int miss;
     int hit;
@@ -94,7 +95,67 @@ void buscaEndereco(Grade *MP, Grade *MC, int endereco, Cont *l){
                 printf("\nValidade    Rótulo    Célula %d\n", enddeccelula);
                 printf("    %d        0x%02x       0x%02x ", MC[l->FIFO].validade, MC[l->FIFO].rotulo, MC[l->FIFO].celula[enddeccelula]);
                 printf("\n");
-                l->FIFO++;
+                if(l->FIFO == 7){
+                    l->FIFO = 0;
+                }
+                else{
+                    l->FIFO++;
+                }
+                break; 
+            }
+        }            
+    }
+}
+
+// Função que escreve em um endereço na Memória
+void escreveEndereco(Grade *MP, Grade *MC, int endereco, int valor, Cont *e){
+    int contaux;
+    int endbinbloco, endbincelula;
+    int enddecbloco, enddeccelula;
+    int valordec;
+
+    endbinbloco = floor(endereco / 100);
+    enddecbloco = converteBD(endbinbloco);
+
+    endbincelula = endereco % 100;
+    enddeccelula = converteBD(endbincelula);
+
+    valordec = converteBD(valor);
+
+    for(int i=0; i<8; i++){
+        if(MC[i].rotulo == enddecbloco){
+            MC[i].validade = 1;
+            MC[i].celula[enddeccelula] = valordec;
+            MP[enddecbloco] = MC[i];
+            printf("\nValidade    Rótulo    Célula %d\n", enddeccelula);
+            printf("    %d        0x%02x       0x%02x ", MC[i].validade, MC[i].rotulo, MC[i].celula[enddeccelula]);
+            printf("\n");
+            e->hit++;
+            contaux = 0;
+            break; 
+        }
+        else{
+            contaux = 1;
+        }
+    }
+
+    if(contaux == 1){
+        e->miss++;
+        for(int i=0; i<32; i++){
+            if(MP[i].rotulo == enddecbloco){
+                MC[e->FIFO] = MP[i];
+                MC[e->FIFO].validade = 1;
+                MC[e->FIFO].celula[enddeccelula] = valordec;
+                MP[i] = MC[e->FIFO];
+                printf("\nValidade    Rótulo    Célula %d\n", enddeccelula);
+                printf("    %d        0x%02x       0x%02x ", MC[e->FIFO].validade, MC[e->FIFO].rotulo, MC[e->FIFO].celula[enddeccelula]);
+                printf("\n");
+                if(e->FIFO == 7){
+                    e->FIFO = 0;
+                }
+                else{
+                    e->FIFO++;
+                }
                 break; 
             }
         }            
@@ -127,7 +188,7 @@ void imprimeMC(Grade *MC){
 
 int main(){
 
-    int op, cont=0, endereco;
+    int op, cont=0, endereco, valor;
     Cont l = {0}, e = {0};
     Grade BlocosMP[32] = {0};
     Grade LinhasMC[8] = {0};
@@ -150,11 +211,18 @@ int main(){
                 scanf("%d", &endereco);
                 buscaEndereco(BlocosMP, LinhasMC, endereco, &l);
                 e.FIFO = l.FIFO;
-                printf("\ncontmiss: %d\n", l.miss);
-                printf("conthit: %d\n", l.hit);
+                l.num++;
                 break;
             
             case 2:
+                printf("Insira o endereço da memória em binário: ");
+                scanf("%d", &endereco);
+                printf("Insira o valor em binário: ");
+                scanf("%d", &valor);
+                escreveEndereco(BlocosMP, LinhasMC, endereco, valor, &e);
+                l.FIFO = e.FIFO;
+                e.num++;
+                break;
                 
                 break;
 
