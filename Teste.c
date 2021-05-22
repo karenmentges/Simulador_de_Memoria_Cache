@@ -11,10 +11,6 @@ typedef struct {
     Celula celulas[4];
 } Bloco;
 
-typedef struct {
-    Bloco Linhas[8];
-} Cache;
-
 
 Celula converteDB(int d){
     Celula aux = {0}, numbin = {0};
@@ -37,14 +33,13 @@ Celula converteDB(int d){
 }
 
 
-void *inicializaMemoria(Bloco *MP){
-    int num1 = 0;
-    int num2 = 0;
-    Celula numbin;
+void inicializaMemoria(Bloco *MP){
+    int num1 = 0, num2 = 0;
+    Celula numbin1 = {0};
     for(int j=0; j<32; j++){
-        numbin = converteDB(num1);
+        numbin1 = converteDB(num1);
         for(int k=0; k<8; k++){
-            MP[j].rotulo[k] = numbin.celula[k];
+            MP[j].rotulo[k] = numbin1.celula[k];
         }
         for(int i=0; i<4; i++){
             MP[j].celulas[i] = converteDB(num2);
