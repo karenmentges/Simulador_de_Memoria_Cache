@@ -22,16 +22,15 @@ typedef struct {
 int menu() {
     int op=0;
 
-    printf("\n ____________________________________________________\n");
+    printf("\n __________________________________________________\n");
     printf("\n  Menu\n");
-    printf("\n  1 Ler um endereço da memória\n");
-    printf("  2 Escrever em um endereço da memória\n");
-    printf("  3 Apresentar conteúdo da Memória Principal\n");
-    printf("  4 Apresentar conteúdo da Memória Cache\n");
-    printf("  5 Apresentar próxima localização a ser substituída\n");
-    printf("  6 Apresentar estatísticas\n");
-    printf("\n  %d Encerar programa", EXIT);
-    printf("\n ____________________________________________________\n\n");
+    printf("\n  1 Ler o conteúdo de um endereço da memória\n");
+    printf("  2 Escrever em um determinado endereço da memória\n");
+    printf("  3 Apresentar as estatísticas de acerto e faltas\n");
+    printf("  4 Apresentar conteúdo da Memória Principal\n");
+    printf("  5 Apresentar conteúdo da Memória Cache\n");
+    printf("\n  %d Encerar o programa", EXIT);
+    printf("\n __________________________________________________\n\n");
     scanf("%d", &op);
 
     return op;
@@ -76,9 +75,9 @@ void buscaEndereco(Grade *MP, Grade *MC, int endereco, Cont *l){
 
     for(int i=0; i<8; i++){
         if(MC[i].rotulo == enddecbloco){
-            printf("\nValidade    Rótulo    Célula %d\n", enddeccelula);
-            printf("    %d        0x%02x       0x%02x ", MC[i].validade, MC[i].rotulo, MC[i].celula[enddeccelula]);
-            printf("\n");
+            printf("\n\n\nEndereço está contido na Memória Cache.\n");
+            printf("\nBloco MP    Quadro MC    Deslocamento    Valor    Validade");
+            printf("\n  0x%02x         0x%02x          0x%02x        0x%02x         %d\n\n\n", MC[i].rotulo, i, enddeccelula, MC[i].celula[enddeccelula], MC[i].validade);
             l->hit++;
             contaux = 0;
             break; 
@@ -93,9 +92,9 @@ void buscaEndereco(Grade *MP, Grade *MC, int endereco, Cont *l){
         for(int i=0; i<32; i++){
             if(MP[i].rotulo == enddecbloco){
                 MC[l->FIFO] = MP[i];
-                printf("\nValidade    Rótulo    Célula %d\n", enddeccelula);
-                printf("    %d        0x%02x       0x%02x ", MC[l->FIFO].validade, MC[l->FIFO].rotulo, MC[l->FIFO].celula[enddeccelula]);
-                printf("\n");
+                printf("\n\n\nEndereço não está contido na Memória Cache.\n");
+                printf("\nBloco MP    Quadro MC    Deslocamento    Valor    Validade");
+                printf("\n  0x%02x         0x%02x          0x%02x        0x%02x         %d\n\n\n", MC[l->FIFO].rotulo, l->FIFO, enddeccelula, MC[l->FIFO].celula[enddeccelula], MC[l->FIFO].validade);             
                 if(l->FIFO == 7){
                     l->FIFO = 0;
                 }
@@ -128,9 +127,9 @@ void escreveEndereco(Grade *MP, Grade *MC, int endereco, int valor, Cont *e){
             MC[i].validade = 1;
             MC[i].celula[enddeccelula] = valordec;
             MP[enddecbloco] = MC[i];
-            printf("\nValidade    Rótulo    Célula %d\n", enddeccelula);
-            printf("    %d        0x%02x       0x%02x ", MC[i].validade, MC[i].rotulo, MC[i].celula[enddeccelula]);
-            printf("\n");
+            printf("\n\n\nEndereço está contido na Memória Cache.\n");
+            printf("\nBloco MP    Quadro MC    Deslocamento    Valor    Validade");
+            printf("\n  0x%02x         0x%02x          0x%02x        0x%02x         %d\n\n\n", MC[i].rotulo, i, enddeccelula, MC[i].celula[enddeccelula], MC[i].validade);
             e->hit++;
             contaux = 0;
             break; 
@@ -148,9 +147,9 @@ void escreveEndereco(Grade *MP, Grade *MC, int endereco, int valor, Cont *e){
                 MC[e->FIFO].validade = 1;
                 MC[e->FIFO].celula[enddeccelula] = valordec;
                 MP[i] = MC[e->FIFO];
-                printf("\nValidade    Rótulo    Célula %d\n", enddeccelula);
-                printf("    %d        0x%02x       0x%02x ", MC[e->FIFO].validade, MC[e->FIFO].rotulo, MC[e->FIFO].celula[enddeccelula]);
-                printf("\n");
+                printf("\n\n\nEndereço não está contido na Memória Cache.\n");
+                printf("\nBloco MP    Quadro MC    Deslocamento    Valor    Validade");
+                printf("\n  0x%02x         0x%02x          0x%02x        0x%02x         %d\n\n\n", MC[e->FIFO].rotulo, e->FIFO, enddeccelula, MC[e->FIFO].celula[enddeccelula], MC[e->FIFO].validade); 
                 if(e->FIFO == 7){
                     e->FIFO = 0;
                 }
@@ -201,12 +200,12 @@ void imprimeEstatisticas(Cont *l, Cont *e){
         res2 = (m1/n1)*100;
     }
 
-    printf("\n");
+    printf("\n\n");
     printf("Leitura\n");
     printf("______________________________\n\n");
     printf("Acessos:  %d\n", l->num);
-    printf("Hit:      %d    %.2f%%\n", l->hit, res1);
-    printf("Miss:     %d    %.2f%%\n", l->miss, res2);
+    printf("Hits:     %d    %.2f%%\n", l->hit, res1);
+    printf("Misses:   %d    %.2f%%\n", l->miss, res2);
     printf("\n");
 
     if(e->num == 0){
@@ -222,8 +221,8 @@ void imprimeEstatisticas(Cont *l, Cont *e){
     printf("Escrita\n");
     printf("______________________________\n\n");
     printf("Acessos:  %d\n", e->num);
-    printf("Hit:      %d    %.2f%%\n", e->hit, res1);
-    printf("Miss:     %d    %.2f%%\n", e->miss, res2);
+    printf("Hits:     %d    %.2f%%\n", e->hit, res1);
+    printf("Misses:   %d    %.2f%%\n", e->miss, res2);
     printf("\n");
 
     if(l->num == 0 && e->num == 0){
@@ -242,8 +241,8 @@ void imprimeEstatisticas(Cont *l, Cont *e){
     printf("Geral\n");
     printf("______________________________\n\n");
     printf("Acessos:  %d\n", l->num+e->num);
-    printf("Hit:      %d    %.2f%%\n", l->hit+e->hit, res4);
-    printf("Miss:     %d    %.2f%%\n", l->miss+e->miss, res5);
+    printf("Hits:     %d    %.2f%%\n", l->hit+e->hit, res4);
+    printf("Misses:   %d    %.2f%%\n", l->miss+e->miss, res5);
     printf("\n\n");
 }
 
@@ -261,14 +260,15 @@ int main(){
     // Impressão da Memória Principal e da Memória Cache
     imprimeMP(BlocosMP);
     imprimeMC(LinhasMC);
-    printf("\nPróxima localização a ser substituida: Linha %d\n", l.FIFO);
-   
 
     while(op!=EXIT){
+
+        printf("\nPróxima localização a ser substituida: Quadro 0x%02x.\n", l.FIFO);
         op = menu();
+
         switch (op) {
             case 1:
-                printf("Insira o endereço da memória em binário: ");
+                printf("\nInsira o endereço da memória em binário de 7 bits: ");
                 scanf("%d", &endereco);
                 buscaEndereco(BlocosMP, LinhasMC, endereco, &l);
                 e.FIFO = l.FIFO;
@@ -276,34 +276,29 @@ int main(){
                 break;
             
             case 2:
-                printf("Insira o endereço da memória em binário: ");
+                printf("\nInsira o endereço da memória em binário de 7 bits: ");
                 scanf("%d", &endereco);
-                printf("Insira o valor em binário: ");
+                printf("Insira o valor em binário de 8 bits: ");
                 scanf("%d", &valor);
                 escreveEndereco(BlocosMP, LinhasMC, endereco, valor, &e);
                 l.FIFO = e.FIFO;
                 e.num++;
                 break;
-
+            
             case 3:
+                imprimeEstatisticas(&l, &e);
+                break;
+            
+            case 4:
                 imprimeMP(BlocosMP);
                 break;
 
-            case 4:
-                imprimeMC(LinhasMC);
-                break;
-
             case 5:
-                printf("\nPróxima localização a ser substituida: Linha %d\n", l.FIFO);
-                break;
-            
-            case 6:
-                imprimeEstatisticas(&l, &e);
+                imprimeMC(LinhasMC);
                 break;
     
             default:
                 break;
-
         }   
     }
         
