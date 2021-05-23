@@ -186,6 +186,47 @@ void imprimeMC(Grade *MC){
     printf("\n");
 }
 
+void imprimeEstatisticas(Cont *l, Cont *e){
+    double n1=l->num, n2=e->num, h1=l->hit, h2=e->hit, m1=l->miss, m2=e->miss;
+    double res1, res2, res3, res4, res5;
+
+    res1 = (h1/n1)*100;
+    res2 = (m1/n1)*100;
+
+    printf("\n");
+    printf("Leitura\n");
+    printf("______________________________\n\n");
+    printf("Acessos:  %d\n", l->num);
+    printf("Hit:      %d    %.2f%%\n", l->hit, res1);
+    printf("Miss:     %d    %.2f%%\n", l->miss, res2);
+    printf("\n");
+
+    res1 = (h2/n2)*100;
+    res2 = (m2/n2)*100;
+
+    printf("\n");
+    printf("Escrita\n");
+    printf("______________________________\n\n");
+    printf("Acessos:  %d\n", e->num);
+    printf("Hit:      %d    %.2f%%\n", e->hit, res1);
+    printf("Miss:     %d    %.2f%%\n", e->miss, res2);
+    printf("\n");
+
+    res1 = h1+h2;
+    res2 = m1+m2;
+    res3 = n1+n2;
+    res4 = (res1/res3)*100;
+    res5 = (res2/res3)*100;
+
+    printf("\n");
+    printf("Geral\n");
+    printf("______________________________\n\n");
+    printf("Acessos:  %d\n", l->num+e->num);
+    printf("Hit:      %d    %.2f%%\n", l->hit+e->hit, res4);
+    printf("Miss:     %d    %.2f%%\n", l->miss+e->miss, res5);
+    printf("\n\n");
+}
+
 int main(){
 
     int op, cont=0, endereco, valor;
@@ -204,7 +245,6 @@ int main(){
 
     while(op!=EXIT){
         op = menu();
-
         switch (op) {
             case 1:
                 printf("Insira o endereço da memória em binário: ");
@@ -223,8 +263,6 @@ int main(){
                 l.FIFO = e.FIFO;
                 e.num++;
                 break;
-                
-                break;
 
             case 3:
                 imprimeMP(BlocosMP);
@@ -235,7 +273,7 @@ int main(){
                 break;
 
             case 5:
-                
+                imprimeEstatisticas(&l, &e);
                 break;
     
             default:
@@ -244,7 +282,6 @@ int main(){
         }   
     }
         
-
     return 0;
 
 }
