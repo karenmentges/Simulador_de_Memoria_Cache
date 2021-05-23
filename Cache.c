@@ -22,15 +22,16 @@ typedef struct {
 int menu() {
     int op=0;
 
-    printf("\n ________________________________________________\n");
-    printf("\n  Menu                  \n");
-    printf("\n  1 Ler um endereço da Memória\n");
-    printf("  2 Escrever em um endereço da Memória\n");
+    printf("\n ____________________________________________________\n");
+    printf("\n  Menu\n");
+    printf("\n  1 Ler um endereço da memória\n");
+    printf("  2 Escrever em um endereço da memória\n");
     printf("  3 Apresentar conteúdo da Memória Principal\n");
     printf("  4 Apresentar conteúdo da Memória Cache\n");
-    printf("  5 Apresentar Estatísticas\n");
-    printf("\n  %d Encerar Programa\n", EXIT);
-    printf("\n ________________________________________________\n\n");
+    printf("  5 Apresentar próxima localização a ser substituída\n");
+    printf("  6 Apresentar estatísticas\n");
+    printf("\n  %d Encerar programa", EXIT);
+    printf("\n ____________________________________________________\n\n");
     scanf("%d", &op);
 
     return op;
@@ -186,12 +187,19 @@ void imprimeMC(Grade *MC){
     printf("\n");
 }
 
+//Função que imprime as estatísticas
 void imprimeEstatisticas(Cont *l, Cont *e){
     double n1=l->num, n2=e->num, h1=l->hit, h2=e->hit, m1=l->miss, m2=e->miss;
     double res1, res2, res3, res4, res5;
 
-    res1 = (h1/n1)*100;
-    res2 = (m1/n1)*100;
+    if(l->num == 0){
+        res1 = 0;
+        res2 = 0;
+    }
+    else{
+        res1 = (h1/n1)*100;
+        res2 = (m1/n1)*100;
+    }
 
     printf("\n");
     printf("Leitura\n");
@@ -201,9 +209,15 @@ void imprimeEstatisticas(Cont *l, Cont *e){
     printf("Miss:     %d    %.2f%%\n", l->miss, res2);
     printf("\n");
 
-    res1 = (h2/n2)*100;
-    res2 = (m2/n2)*100;
-
+    if(e->num == 0){
+        res1 = 0;
+        res2 = 0;
+    }
+    else{
+        res1 = (h2/n2)*100;
+        res2 = (m2/n2)*100;
+    }
+    
     printf("\n");
     printf("Escrita\n");
     printf("______________________________\n\n");
@@ -212,11 +226,17 @@ void imprimeEstatisticas(Cont *l, Cont *e){
     printf("Miss:     %d    %.2f%%\n", e->miss, res2);
     printf("\n");
 
-    res1 = h1+h2;
-    res2 = m1+m2;
-    res3 = n1+n2;
-    res4 = (res1/res3)*100;
-    res5 = (res2/res3)*100;
+    if(l->num == 0 && e->num == 0){
+        res4 = 0;
+        res5 = 0;
+    }
+    else{
+        res1 = h1+h2;
+        res2 = m1+m2;
+        res3 = n1+n2;
+        res4 = (res1/res3)*100;
+        res5 = (res2/res3)*100;
+    }
 
     printf("\n");
     printf("Geral\n");
@@ -241,6 +261,7 @@ int main(){
     // Impressão da Memória Principal e da Memória Cache
     imprimeMP(BlocosMP);
     imprimeMC(LinhasMC);
+    printf("\nPróxima localização a ser substituida: Linha %d\n", l.FIFO);
    
 
     while(op!=EXIT){
@@ -273,6 +294,10 @@ int main(){
                 break;
 
             case 5:
+                printf("\nPróxima localização a ser substituida: Linha %d\n", l.FIFO);
+                break;
+            
+            case 6:
                 imprimeEstatisticas(&l, &e);
                 break;
     
