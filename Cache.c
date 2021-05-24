@@ -74,7 +74,7 @@ void buscaEndereco(Grade *MP, Grade *MC, int endereco, Cont *l){
     enddeccelula = converteBD(endbincelula);
 
     for(int i=0; i<8; i++){
-        if(MC[i].rotulo == enddecbloco){
+        if(MC[i].rotulo == enddecbloco && MC[i].validade==1){
             printf("\n\n\nEndereço está contido na Memória Cache.\n");
             printf("\nBloco MP    Quadro MC    Deslocamento    Valor    Validade");
             printf("\n  0x%02x         0x%02x          0x%02x        0x%02x         %d\n\n\n", MC[i].rotulo, i, enddeccelula, MC[i].celula[enddeccelula], MC[i].validade);
@@ -89,21 +89,17 @@ void buscaEndereco(Grade *MP, Grade *MC, int endereco, Cont *l){
 
     if(contaux == 1){
         l->miss++;
-        for(int i=0; i<32; i++){
-            if(MP[i].rotulo == enddecbloco){
-                MC[l->FIFO] = MP[i];
-                printf("\n\n\nEndereço não está contido na Memória Cache.\n");
-                printf("\nBloco MP    Quadro MC    Deslocamento    Valor    Validade");
-                printf("\n  0x%02x         0x%02x          0x%02x        0x%02x         %d\n\n\n", MC[l->FIFO].rotulo, l->FIFO, enddeccelula, MC[l->FIFO].celula[enddeccelula], MC[l->FIFO].validade);             
-                if(l->FIFO == 7){
-                    l->FIFO = 0;
-                }
-                else{
-                    l->FIFO++;
-                }
-                break; 
-            }
-        }            
+        MP[enddecbloco].validade = 1;
+        MC[l->FIFO] = MP[enddecbloco];
+        printf("\n\n\nEndereço não está contido na Memória Cache.\n");
+        printf("\nBloco MP    Quadro MC    Deslocamento    Valor    Validade");
+        printf("\n  0x%02x         0x%02x          0x%02x        0x%02x         %d\n\n\n", MC[l->FIFO].rotulo, l->FIFO, enddeccelula, MC[l->FIFO].celula[enddeccelula], MC[l->FIFO].validade);             
+        if(l->FIFO == 7){
+            l->FIFO = 0;
+        }
+        else{
+            l->FIFO++;
+        }
     }
 }
 
@@ -123,8 +119,7 @@ void escreveEndereco(Grade *MP, Grade *MC, int endereco, int valor, Cont *e){
     valordec = converteBD(valor);
 
     for(int i=0; i<8; i++){
-        if(MC[i].rotulo == enddecbloco){
-            MC[i].validade = 1;
+        if(MC[i].rotulo == enddecbloco && MC[i].validade==1){
             MC[i].celula[enddeccelula] = valordec;
             MP[enddecbloco] = MC[i];
             printf("\n\n\nEndereço está contido na Memória Cache.\n");
@@ -141,24 +136,19 @@ void escreveEndereco(Grade *MP, Grade *MC, int endereco, int valor, Cont *e){
 
     if(contaux == 1){
         e->miss++;
-        for(int i=0; i<32; i++){
-            if(MP[i].rotulo == enddecbloco){
-                MC[e->FIFO] = MP[i];
-                MC[e->FIFO].validade = 1;
-                MC[e->FIFO].celula[enddeccelula] = valordec;
-                MP[i] = MC[e->FIFO];
-                printf("\n\n\nEndereço não está contido na Memória Cache.\n");
-                printf("\nBloco MP    Quadro MC    Deslocamento    Valor    Validade");
-                printf("\n  0x%02x         0x%02x          0x%02x        0x%02x         %d\n\n\n", MC[e->FIFO].rotulo, e->FIFO, enddeccelula, MC[e->FIFO].celula[enddeccelula], MC[e->FIFO].validade); 
-                if(e->FIFO == 7){
-                    e->FIFO = 0;
-                }
-                else{
-                    e->FIFO++;
-                }
-                break; 
-            }
-        }            
+        MC[e->FIFO] = MP[enddecbloco];
+        MC[e->FIFO].validade = 1;
+        MC[e->FIFO].celula[enddeccelula] = valordec;
+        MP[enddecbloco] = MC[e->FIFO];
+        printf("\n\n\nEndereço não está contido na Memória Cache.\n");
+        printf("\nBloco MP    Quadro MC    Deslocamento    Valor    Validade");
+        printf("\n  0x%02x         0x%02x          0x%02x        0x%02x         %d\n\n\n", MC[e->FIFO].rotulo, e->FIFO, enddeccelula, MC[e->FIFO].celula[enddeccelula], MC[e->FIFO].validade); 
+        if(e->FIFO == 7){
+            e->FIFO = 0;
+        }
+        else{
+            e->FIFO++;
+        }       
     }
 }
 
